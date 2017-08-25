@@ -4,7 +4,7 @@ const dynamodb = require('../shared/dynamodb');
 
 module.exports.list = (event, context, callback) => {
   const params = {
-    TableName: process.env.DYNAMODB_BADGE_TABLE,
+    TableName: process.env.DYNAMODB_CLUSTER_TABLE,
   };
 
   // fetch all todos from the database

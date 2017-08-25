@@ -58,6 +58,7 @@ provider:
     DYNAMODB_FAQ_TABLE: ${self:service}-prod-Faq
     DYNAMODB_SNAP_TABLE: ${self:service}-prod-Snap
     DYNAMODB_BADGE_TABLE: ${self:service}-prod-Badge
+    DYNAMODB_CLUSTER_TABLE: ${self:service}-prod-polygons
 
   iamRoleStatements:
     - Effect: Allow

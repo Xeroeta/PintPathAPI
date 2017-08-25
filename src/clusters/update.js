@@ -14,7 +14,7 @@ module.exports.update = (event, context, callback) => {
   }
 
   const params = {
-    TableName: process.env.DYNAMODB_BADGE_TABLE,
+    TableName: process.env.DYNAMODB_CLUSTER_TABLE,
     Key: {
       id: event.pathParameters.id,
     },
