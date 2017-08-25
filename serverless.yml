@@ -5,6 +5,7 @@ frameworkVersion: ">=1.1.0 <2.0.0"
 plugins:
   - serverless-dynamodb-local
   - serverless-offline
+  - serverless-plugin-multiple-responses
 
 custom:
   dynamodb:
@@ -15,16 +16,21 @@ custom:
     migration:
       dir: offline/migrations
 
+package:
+  exclude:
+    - CognitoUserPool
+
 provider:
   name: aws
-  profile: fiduciam
-  region: us-east-2
-  stage: test
+  profile: ${file(./config/aws_params.yml):profile}
+  region: ${file(./config/aws_params.yml):region}
+  stage: ${file(./config/aws_params.yml):stage}
   tags: 
-    env: test
+    env: ${file(./config/aws_params.yml):stage}
   memorySize: 1536
   stackTags: 
     projectname: swiftmile
+  deploymentBucket: us.fiduciam.nkcgo.api.deploys
   versionFunctions: true
   runtime: nodejs4.3
   # apiKeys:
@@ -40,13 +46,19 @@ provider:
   #     burstLimit: 200
   #     rateLimit: 100
   environment:
-    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    DYNAMODB_TABLE: ${self:service}-prod
     # DYNAMODB_DEVICE_TABLE: ${self:service}-${opt:stage, self:provider.stage}-Device
-    DYNAMODB_USER_TABLE: ${self:service}-${opt:stage, self:provider.stage}-User
-    DYNAMODB_VENUE_TABLE: ${self:service}-${opt:stage, self:provider.stage}-Venue
-    DYNAMODB_FAQ_TABLE: ${self:service}-${opt:stage, self:provider.stage}-Faq
-    DYNAMODB_SNAP_TABLE: ${self:service}-${opt:stage, self:provider.stage}-Snap
-    DYNAMODB_BADGE_TABLE: ${self:service}-${opt:stage, self:provider.stage}-Badge
+#    DYNAMODB_USER_TABLE: ${self:service}-${opt:stage, self:provider.stage}-User
+#    DYNAMODB_VENUE_TABLE: ${self:service}-${opt:stage, self:provider.stage}-Venue
+#    DYNAMODB_FAQ_TABLE: ${self:service}-${opt:stage, self:provider.stage}-Faq
+#    DYNAMODB_SNAP_TABLE: ${self:service}-${opt:stage, self:provider.stage}-Snap
+#    DYNAMODB_BADGE_TABLE: ${self:service}-${opt:stage, self:provider.stage}-Badge
+    DYNAMODB_USER_TABLE: ${self:service}-prod-User
+    DYNAMODB_VENUE_TABLE: ${self:service}-prod-Venue
+    DYNAMODB_FAQ_TABLE: ${self:service}-prod-Faq
+    DYNAMODB_SNAP_TABLE: ${self:service}-prod-Snap
+    DYNAMODB_BADGE_TABLE: ${self:service}-prod-Badge
+
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -117,353 +129,5 @@ provider:
           ResourceType:
             - AWS::EC2::Instance
 
-functions:
-  # authorizerFunc:
-  #   handler: handler.authorizerFunc
-  create:
-    handler: todos/create.create
-    events:
-      - http:
-          path: todos
-          method: post
-          cors: true
-          # integration: lambda
-          # private: true
-          # authorizer:
-          #   name: authorizerFunc
-          #   arn: xxx:xxx:Lambda-Name #optional
-          #   resultTtlInSeconds: 0
-          #   identitySource: method.request.header.Authorization
-          #   identityValidationExpression: someRegex
-
-  list:
-    handler: todos/list.list
-    events:
-      - http:
-          path: todos
-          method: get
-          cors: true
-
-  get:
-    handler: todos/get.get
-    events:
-      - http:
-          path: todos/{id}
-          method: get
-          cors: true
-          # integration: lambda
-          # request:
-          #   parameters:
-          #     paths:
-          #       id: true
-          # response:
-          #   headers:
-          #     Content-Type: "'text/html'"
-          #   template: $input.path('$')
-          #   statusCodes:
-                # 201:
-                #     pattern: '' # Default response method
-                # 400:
-                #     pattern: '' # Bad Request
-                # 401:
-                #     pattern: '' # Unauthorized
-                # 403:
-                #     pattern: '' # Forbidden
-                # 404:
-                #     pattern: '' # Not Found
-                # 422:
-                #     pattern: '' # Unprocessable Entity
-                # 409:
-                #     pattern: '.*"statusCode":409,.*' # JSON response
-                #     template: $input.path("$.errorMessage") # JSON return object
-                #     headers:
-                #       Content-Type: "'application/json+hal'"
-                # 500:
-                #     pattern: '' # Internal Server Error
-                # 502:
-                #     pattern: '' # Bad Gateway
-                # 504:
-                #     pattern: '' # Gateway Timeout
-
-  update:
-    handler: todos/update.update
-    events:
-      - http:
-          path: todos/{id}
-          method: put
-          cors: true
-
-  delete:
-    handler: todos/delete.delete
-    events:
-      - http:
-          path: todos/{id}
-          method: delete
-          cors: true
-
-  user_create:
-    handler: users/create.create
-    events:
-      - http:
-          path: users
-          method: post
-          cors: true
-
-  user_list:
-    handler: users/list.list
-    events:
-      - http:
-          path: users
-          method: get
-          cors: true
-
-  user_get:
-    handler: users/get.get
-    events:
-      - http:
-          path: users/{id}
-          method: get
-          cors: true
-
-  user_update:
-    handler: users/update.update
-    events:
-      - http:
-          path: users/{id}
-          method: put
-          cors: true
-
-  user_delete:
-    handler: users/delete.delete
-    events:
-      - http:
-          path: users/{id}
-          method: delete
-          cors: true
-
-  venue_list:
-    handler: venues/list.list
-    events:
-      - http:
-          path: venues
-          method: get
-          cors: true
-
-  venue_get:
-    handler: venues/get.get
-    events:
-      - http:
-          path: venues/{id}
-          method: get
-          cors: true
-
-  venue_update:
-    handler: venues/update.update
-    events:
-      - http:
-          path: venues/{id}
-          method: put
-          cors: true
-
-  venue_delete:
-    handler: venues/delete.delete
-    events:
-      - http:
-          path: venues/{id}
-          method: delete
-          cors: true
-
-  faq_list:
-    handler: faqs/list.list
-    events:
-      - http:
-          path: faqs
-          method: get
-          cors: true
-
-  faq_get:
-    handler: faqs/get.get
-    events:
-      - http:
-          path: faqs/{id}
-          method: get
-          cors: true
-
-  faq_update:
-    handler: faqs/update.update
-    events:
-      - http:
-          path: faqs/{id}
-          method: put
-          cors: true
-
-  faq_delete:
-    handler: faqs/delete.delete
-    events:
-      - http:
-          path: faqs/{id}
-          method: delete
-          cors: true
-
-  snap_list:
-    handler: snaps/list.list
-    events:
-      - http:
-          path: snaps
-          method: get
-          cors: true
-
-  snap_get:
-    handler: snaps/get.get
-    events:
-      - http:
-          path: snaps/{id}
-          method: get
-          cors: true
-
-  snap_update:
-    handler: snaps/update.update
-    events:
-      - http:
-          path: snaps/{id}
-          method: put
-          cors: true
-
-  snap_delete:
-    handler: snaps/delete.delete
-    events:
-      - http:
-          path: snaps/{id}
-          method: delete
-          cors: true
-
-  badge_list:
-    handler: badges/list.list
-    events:
-      - http:
-          path: badges
-          method: get
-          cors: true
-
-  badge_get:
-    handler: badges/get.get
-    events:
-      - http:
-          path: badges/{id}
-          method: get
-          cors: true
-
-  badge_update:
-    handler: badges/update.update
-    events:
-      - http:
-          path: badges/{id}
-          method: put
-          cors: true
-
-  badge_delete:
-    handler: badges/delete.delete
-    events:
-      - http:
-          path: badges/{id}
-          method: delete
-          cors: true
-
-# resources:
-#   Resources:
-#     TodosDynamoDbTable:
-#       Type: 'AWS::DynamoDB::Table'
-#       DeletionPolicy: Retain
-#       Properties:
-#         AttributeDefinitions:
-#           -
-#             AttributeName: id
-#             AttributeType: S
-#         KeySchema:
-#           -
-#             AttributeName: id
-#             KeyType: HASH
-#         ProvisionedThroughput:
-#           ReadCapacityUnits: 1
-#           WriteCapacityUnits: 1
-#         TableName: ${self:provider.environment.DYNAMODB_TABLE}
-#     UsersDynamoDbTable:
-#       Type: 'AWS::DynamoDB::Table'
-#       DeletionPolicy: Retain
-#       Properties:
-#         AttributeDefinitions:
-#           -
-#             AttributeName: id
-#             AttributeType: S
-#         KeySchema:
-#           -
-#             AttributeName: id
-#             KeyType: HASH
-#         ProvisionedThroughput:
-#           ReadCapacityUnits: 1
-#           WriteCapacityUnits: 1
-#         TableName: ${self:provider.environment.DYNAMODB_USER_TABLE}
-#     VenuesDynamoDbTable:
-#       Type: 'AWS::DynamoDB::Table'
-#       DeletionPolicy: Retain
-#       Properties:
-#         AttributeDefinitions:
-#           -
-#             AttributeName: id
-#             AttributeType: S
-#         KeySchema:
-#           -
-#             AttributeName: id
-#             KeyType: HASH
-#         ProvisionedThroughput:
-#           ReadCapacityUnits: 1
-#           WriteCapacityUnits: 1
-#         TableName: ${self:provider.environment.DYNAMODB_VENUE_TABLE}
-#     FaqsDynamoDbTable:
-#       Type: 'AWS::DynamoDB::Table'
-#       DeletionPolicy: Retain
-#       Properties:
-#         AttributeDefinitions:
-#           -
-#             AttributeName: id
-#             AttributeType: S
-#         KeySchema:
-#           -
-#             AttributeName: id
-#             KeyType: HASH
-#         ProvisionedThroughput:
-#           ReadCapacityUnits: 1
-#           WriteCapacityUnits: 1
-#         TableName: ${self:provider.environment.DYNAMODB_FAQ_TABLE}
-#     SnapsDynamoDbTable:
-#       Type: 'AWS::DynamoDB::Table'
-#       DeletionPolicy: Retain
-#       Properties:
-#         AttributeDefinitions:
-#           -
-#             AttributeName: id
-#             AttributeType: S
-#         KeySchema:
-#           -
-#             AttributeName: id
-#             KeyType: HASH
-#         ProvisionedThroughput:
-#           ReadCapacityUnits: 1
-#           WriteCapacityUnits: 1
-#         TableName: ${self:provider.environment.DYNAMODB_SNAP_TABLE}
-#     BadgesDynamoDbTable:
-#       Type: 'AWS::DynamoDB::Table'
-#       DeletionPolicy: Retain
-#       Properties:
-#         AttributeDefinitions:
-#           -
-#             AttributeName: id
-#             AttributeType: S
-#         KeySchema:
-#           -
-#             AttributeName: id
-#             KeyType: HASH
-#         ProvisionedThroughput:
-#           ReadCapacityUnits: 1
-#           WriteCapacityUnits: 1
-#         TableName: ${self:provider.environment.DYNAMODB_BADGE_TABLE}
+functions: ${file(./config/functions.yml):functions}
+#resources: ${file(./config/resources.yml):resources}

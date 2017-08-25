@@ -1,22 +1,22 @@
 'use strict';
 
 const uuid = require('uuid');
-const dynamodb = require('./dynamodb');
+const dynamodb = require('../shared/dynamodb');
 
 module.exports.create = (event, context, callback) => {
   const timestamp = new Date().getTime();
   const data = JSON.parse(event.body);
-  if (typeof data.text !== 'string') {
-    console.error('Validation Failed');
-    callback(new Error('Couldn\'t create the todo item.'));
-    return;
-  }
+//  if (true || typeof data.text !== 'string') {
+//    console.error('Validation Failed');
+//    callback(new Error('Couldn\'t create the user item.'));
+//    return;
+//  }
 
   const params = {
     TableName: process.env.DYNAMODB_USER_TABLE,
     Item: {
       id: uuid.v1(),
-      text: data.text,
+      data: data,
       checked: false,
       createdAt: timestamp,
       updatedAt: timestamp,
@@ -28,7 +28,7 @@ module.exports.create = (event, context, callback) => {
     // handle potential errors
     if (error) {
       console.error(error);
-      callback(new Error('Couldn\'t create the todo item.'));
+      callback(new Error('Couldn\'t create the user item.'));
       return;
     }
 
