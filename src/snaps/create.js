@@ -28,10 +28,10 @@ function handleRequest(user, event, callback) {
   console.log(user);
 //  const profileId = util.getIdFromPath(event.path);
   let body = null;
-  
+  body = event.body;
   try {
     console.log('Inside HAndle request - event body parsing.');
-    body = JSON.parse(event.body);
+//    body = JSON.parse(event.body);
   } catch(err) {
     // meh
     console.log('Inside HAndle request - event body parse error.');
@@ -56,19 +56,21 @@ function handleRequest(user, event, callback) {
       return;
     }
 
-    if(result.Items.length==0)
+    if(result.Items.length!=0)
     {
         console.log("Results count zero. Adding new record");
         const timestamp = new Date().getTime();
-        const data = '';//JSON.parse(event.body);
-
+//        const data = JSON.parse(event.body);
+        var user_id = result.Items[0].id;
         const params = {
-          TableName: process.env.DYNAMODB_USER_TABLE,
+          TableName: process.env.DYNAMODB_SNAP_TABLE,
           Item: {
             id: uuid.v1(),
-            uid: user.sub,
-            email: user.email,
+            user_id: user_id,
+            image_url: body.image_url,
+            venue: body.venue,
             checked: false,
+            reviewed: false,
             createdAt: timestamp,
             updatedAt: timestamp,
           },
@@ -96,13 +98,7 @@ function handleRequest(user, event, callback) {
     }
     else
     {
-        console.log("Results found returning user");
-        const response = {
-            statusCode: 200,
-            body: JSON.stringify(result.Items),
-          };
-        console.error('Success');
-        callback(null, response);
+        callback(null, 'Invalid Request');
         return;
     }
     // create a response

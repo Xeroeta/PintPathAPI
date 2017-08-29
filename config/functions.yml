@@ -1,4 +1,10 @@
 functions:
+  #Authentication
+  auth:
+    handler: src/auth0/authHandler.auth
+    
+  ##Private Functions
+  
   #User
   user_create:
     handler: src/users/create.create
@@ -8,13 +14,14 @@ functions:
           method: post
           cors: true
           integration: lambda
-          private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
+  user_get:
+    handler: src/users/get.get
+    events:
+      - http:
+          path: users/{id}
+          method: get
+          cors: true
+          integration: lambda
   user_list:
     handler: src/users/list.list
     events:
@@ -24,27 +31,9 @@ functions:
           cors: true
           integration: lambda
           private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
-  user_get:
-    handler: src/users/get.get
-    events:
-      - http:
-          path: users/{id}
-          method: get
-          cors: true
-          integration: lambda
-          private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
+          authorizer: 
+            name: auth
+            arn: arn:aws:lambda:us-east-2:450228362552:function:swiftmile-prd-auth
   user_update:
     handler: src/users/update.update
     events:
@@ -54,139 +43,10 @@ functions:
           cors: true
           integration: lambda
           private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
+          authorizer: 
+            name: auth
+            arn: arn:aws:lambda:us-east-2:450228362552:function:swiftmile-prd-auth
   
-  #Venue
-  venue_list:
-    handler: src/venues/list.list
-    events:
-      - http:
-          path: venues
-          method: get
-          cors: true
-          integration: lambda
-#          private: true
-#          authorizer:
-#            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-#            claims:
-#              - email
-#              - nickname
-#              - sub
-  venue_get:
-    handler: src/venues/get.get
-    events:
-      - http:
-          path: venues/{id}
-          method: get
-          cors: true
-          integration: lambda
-          private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
-
-  #UserCheckIns
-  snap_list:
-    handler: src/snaps/list.list
-    events:
-      - http:
-          path: snaps
-          method: get
-          cors: true
-          integration: lambda
-          private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
-  snap_get:
-    handler: src/snaps/get.get
-    events:
-      - http:
-          path: snaps/{id}
-          method: get
-          cors: true
-          integration: lambda
-          private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
-  snap_update:
-    handler: src/snaps/update.update
-    events:
-      - http:
-          path: snaps/{id}
-          method: put
-          cors: true
-          integration: lambda
-          private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
-  snap_delete:
-    handler: src/snaps/delete.delete
-    events:
-      - http:
-          path: snaps/{id}
-          method: delete
-          cors: true
-          integration: lambda
-          private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
-
-  #Badges
-  badge_list:
-    handler: src/badges/list.list
-    events:
-      - http:
-          path: badges
-          method: get
-          cors: true
-          integration: lambda
-#          private: true
-#          authorizer:
-#            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-#            claims:
-#              - email
-#              - nickname
-#              - sub
-  badge_get:
-    handler: src/badges/get.get
-    events:
-      - http:
-          path: badges/{id}
-          method: get
-          cors: true
-          integration: lambda
-          private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
-
   #User Badges
   user_badge_list:
     handler: src/user_badges/list.list
@@ -196,28 +56,80 @@ functions:
           method: get
           cors: true
           integration: lambda
-          private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
-  user_badge_get:
-    handler: src/user_badges/get.get
+  #UserCheckIns
+  snap_list:
+    handler: src/snaps/list.list
     events:
       - http:
-          path: user-badges/{id}
+          path: snaps
+          method: get
+          cors: true
+          integration: lambda
+  snap_create:
+    handler: src/snaps/create.create
+    events:
+      - http:
+          path: snaps
+          method: post
+          cors: true
+          integration: lambda
+  snap_get:
+    handler: src/snaps/get.get
+    events:
+      - http:
+          path: snaps/{id}
           method: get
           cors: true
           integration: lambda
           private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
+          authorizer: 
+            name: auth
+            arn: arn:aws:lambda:us-east-2:450228362552:function:swiftmile-prd-auth
+  snap_update:
+    handler: src/snaps/update.update
+    events:
+      - http:
+          path: snaps/{id}
+          method: put
+          cors: true
+          integration: lambda
+          private: true
+          authorizer: 
+            name: auth
+            arn: arn:aws:lambda:us-east-2:450228362552:function:swiftmile-prd-auth
+  snap_delete:
+    handler: src/snaps/delete.delete
+    events:
+      - http:
+          path: snaps/{id}
+          method: delete
+          cors: true
+          integration: lambda
+          private: true
+          authorizer: 
+            name: auth
+            arn: arn:aws:lambda:us-east-2:450228362552:function:swiftmile-prd-auth
+
+  ##Public Functions
+  #Badges
+  badge_list:
+    handler: src/badges/list.list
+    events:
+      - http:
+          path: badges
+          method: get
+          cors: true
+          integration: lambda
+
+  #Venue
+  venue_list:
+    handler: src/venues/list.list
+    events:
+      - http:
+          path: venues
+          method: get
+          cors: true
+          integration: lambda
 
   #Clients
   client_create:
@@ -228,30 +140,8 @@ functions:
           method: post
           cors: true
           integration: lambda
-          private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
 
   #Clusters
-  cluster_create:
-    handler: src/clusters/create.create
-    events:
-      - http:
-          path: clusters
-          method: post
-          cors: true
-          integration: lambda
-          private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
   cluster_list:
     handler: src/clusters/list.list
     events:
@@ -260,43 +150,6 @@ functions:
           method: get
           cors: true
           integration: lambda
-#          private: true
-#          authorizer:
-#            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-#            claims:
-#              - email
-#              - nickname
-#              - sub
-  cluster_update:
-    handler: src/clusters/update.update
-    events:
-      - http:
-          path: clusters
-          method: put
-          cors: true
-          integration: lambda
-          private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
-  cluster_get:
-    handler: src/clusters/get.get
-    events:
-      - http:
-          path: clusters/{id}
-          method: get
-          cors: true
-          integration: lambda
-          private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
 
   #Schedules
   schedule_list:
@@ -307,60 +160,14 @@ functions:
           method: get
           cors: true
           integration: lambda
-          private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
+#          private: true
+#          authorizer:
+#            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
+#            claims:
+#              - email
+#              - nickname
+#              - sub
 
-  #Push Notifications
-  notification_create:
-    handler: src/notifications/create.create
-    events:
-      - http:
-          path: notifications
-          method: post
-          cors: true
-          integration: lambda
-          private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
-  notification_update:
-    handler: src/notifications/update.update
-    events:
-      - http:
-          path: notifications
-          method: put
-          cors: true
-          integration: lambda
-          private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
-  notification_list:
-    handler: src/notifications/list.list
-    events:
-      - http:
-          path: notifications
-          method: get
-          cors: true
-          integration: lambda
-          private: true
-          authorizer:
-            arn: ${file(./config/aws_params.yml):USER_POOL_ARN}
-            claims:
-              - email
-              - nickname
-              - sub
 #        request:
 #          parameters:
 #            paths:

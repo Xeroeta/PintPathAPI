@@ -3,6 +3,8 @@
 const dynamodb = require('../shared/dynamodb');
 
 module.exports.list = (event, context, callback) => {
+    console.log('Event object: ');
+    console.log(event);
   const params = {
     TableName: process.env.DYNAMODB_USER_TABLE,
   };

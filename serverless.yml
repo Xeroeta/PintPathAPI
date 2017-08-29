@@ -32,7 +32,10 @@ provider:
     projectname: swiftmile
   deploymentBucket: us.fiduciam.nkcgo.api.deploys
   versionFunctions: true
-  runtime: nodejs4.3
+  runtime: nodejs6.10
+  apiKeys: false
+#  role: arn:aws:iam::450228362552:role/swiftmile-pr-us-east-2-lambdaRole
+#  cfnRole: arn:aws:iam::450228362552:role/swiftmile-pr-us-east-2-lambdaRole
   # apiKeys:
   #   - myFirstKey
   #   - ${opt:stage}-myFirstKey
@@ -47,18 +50,15 @@ provider:
   #     rateLimit: 100
   environment:
     DYNAMODB_TABLE: ${self:service}-prod
-    # DYNAMODB_DEVICE_TABLE: ${self:service}-${opt:stage, self:provider.stage}-Device
-#    DYNAMODB_USER_TABLE: ${self:service}-${opt:stage, self:provider.stage}-User
-#    DYNAMODB_VENUE_TABLE: ${self:service}-${opt:stage, self:provider.stage}-Venue
-#    DYNAMODB_FAQ_TABLE: ${self:service}-${opt:stage, self:provider.stage}-Faq
-#    DYNAMODB_SNAP_TABLE: ${self:service}-${opt:stage, self:provider.stage}-Snap
-#    DYNAMODB_BADGE_TABLE: ${self:service}-${opt:stage, self:provider.stage}-Badge
     DYNAMODB_USER_TABLE: ${self:service}-prod-User
     DYNAMODB_VENUE_TABLE: ${self:service}-prod-Venue
-    DYNAMODB_FAQ_TABLE: ${self:service}-prod-Faq
     DYNAMODB_SNAP_TABLE: ${self:service}-prod-Snap
-    DYNAMODB_BADGE_TABLE: ${self:service}-prod-Badge
-    DYNAMODB_CLUSTER_TABLE: ${self:service}-prod-polygons
+    DYNAMODB_BADGE_TABLE: ${self:service}-prod-Badges
+    DYNAMODB_USER_BADGES_TABLE: ${self:service}-prod-UserBadges
+    DYNAMODB_CLUSTER_TABLE: ${self:service}-map-polygons
+    AUTH0_CLIENT: ${file(./config/aws_params.yml):AUTH0_CLIENT_ID}
+    AUTH0_SECRET: ${file(./config/aws_params.yml):AUTH0_CLIENT_SECRET}
+    AUTH0_DOMAIN: ${file(./config/aws_params.yml):AUTH0_DOMAIN}
 
   iamRoleStatements:
     - Effect: Allow
@@ -78,25 +78,27 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_USER_BADGES_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_USER_TABLE}"
     - Effect: Allow
       Action:
         - dynamodb:Query
         - dynamodb:Scan
         - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_VENUE_TABLE}"
     - Effect: Allow
       Action:
         - dynamodb:Query
         - dynamodb:Scan
         - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_FAQ_TABLE}"
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_CLUSTER_TABLE}"
     - Effect: Allow
       Action:
         - dynamodb:Query

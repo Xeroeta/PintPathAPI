@@ -4,7 +4,7 @@ const dynamodb = require('../shared/dynamodb');
 
 module.exports.delete = (event, context, callback) => {
   const params = {
-    TableName: process.env.DYNAMODB_VENUE_TABLE,
+    TableName: process.env.DYNAMODB_SNAP_TABLE,
     Key: {
       id: event.pathParameters.id,
     },

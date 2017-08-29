@@ -12,7 +12,7 @@ module.exports.list = (event, context, callback) => {
     // handle potential errors
     if (error) {
       console.error(error);
-      callback(new Error('Couldn\'t fetch the todos.'));
+      callback(new Error('Couldn\'t fetch the badges list.'));
       return;
     }
 

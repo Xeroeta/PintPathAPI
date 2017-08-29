@@ -2,7 +2,7 @@
 const auth = require('../shared/auth');
 const dynamodb = require('../shared/dynamodb');
 const uuid = require('uuid');
-function create(event, context, callback) {
+function list(event, context, callback) {
   if (!event || !event.headers) {
     callback({
       error: 'Not a valid event object'
@@ -31,7 +31,7 @@ function handleRequest(user, event, callback) {
   
   try {
     console.log('Inside HAndle request - event body parsing.');
-    body = JSON.parse(event.body);
+//    body = JSON.parse(event.body);
   } catch(err) {
     // meh
     console.log('Inside HAndle request - event body parse error.');
@@ -56,40 +56,34 @@ function handleRequest(user, event, callback) {
       return;
     }
 
-    if(result.Items.length==0)
+    if(result.Items.length!=0)
     {
         console.log("Results count zero. Adding new record");
         const timestamp = new Date().getTime();
         const data = '';//JSON.parse(event.body);
-
+        var user_id = result.Items[0].id;
         const params = {
-          TableName: process.env.DYNAMODB_USER_TABLE,
-          Item: {
-            id: uuid.v1(),
-            uid: user.sub,
-            email: user.email,
-            checked: false,
-            createdAt: timestamp,
-            updatedAt: timestamp,
-          },
+          TableName: process.env.DYNAMODB_SNAP_TABLE,
+          ProjectionExpression:'id,user_id,image_url,venue,reviewed,createdAt',
+          FilterExpression:'user_id = :user_id',
+          ExpressionAttributeValues:{ ":user_id" : user_id }
         };
         
-        console.log("Adding data-");
+        console.log("Getting data-");
         console.log(params);
         // write to the database
-        dynamodb.put(params, (error) => {
+        dynamodb.scan(params, (error, result) => {
           // handle potential errors
           if (error) {
             console.error(error);
-            callback(new Error('Couldn\'t create the user item.'));
+            callback(new Error('Couldn\'t get the checkins data.'));
             return;
           }
-          console.log("New user added, returning newly added user");
           
           // create a response
           const response = {
             statusCode: 200,
-            body: JSON.stringify(params.Item),
+            body: JSON.stringify(result.Items),
           };
           callback(null, response);
         });
@@ -98,8 +92,8 @@ function handleRequest(user, event, callback) {
     {
         console.log("Results found returning user");
         const response = {
-            statusCode: 200,
-            body: JSON.stringify(result.Items),
+            statusCode: 401,
+            body: "Access Denied. Not valid user."
           };
         console.error('Success');
         callback(null, response);
@@ -112,4 +106,4 @@ function handleRequest(user, event, callback) {
 //  callback(null, 'done');
 }
 
-module.exports.create = create;
+module.exports.list = list;

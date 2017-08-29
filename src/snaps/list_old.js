@@ -3,8 +3,10 @@
 const dynamodb = require('../shared/dynamodb');
 
 module.exports.list = (event, context, callback) => {
+    console.log('Event object: ');
+    console.log(event);
   const params = {
-    TableName: process.env.DYNAMODB_FAQ_TABLE,
+    TableName: process.env.DYNAMODB_SNAP_TABLE,
   };
 
   // fetch all todos from the database
@@ -12,7 +14,7 @@ module.exports.list = (event, context, callback) => {
     // handle potential errors
     if (error) {
       console.error(error);
-      callback(new Error('Couldn\'t fetch the todos.'));
+      callback(new Error('Couldn\'t fetch the CheckIns.'));
       return;
     }
 

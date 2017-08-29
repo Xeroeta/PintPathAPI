@@ -6,17 +6,19 @@ const dynamodb = require('../shared/dynamodb');
 module.exports.create = (event, context, callback) => {
   const timestamp = new Date().getTime();
   const data = JSON.parse(event.body);
-  if (typeof data.text !== 'string') {
-    console.error('Validation Failed');
-    callback(new Error('Couldn\'t create the todo item.'));
-    return;
-  }
-
+//  if (true || typeof data.text !== 'string') {
+//    console.error('Validation Failed');
+//    callback(new Error('Couldn\'t create the user item.'));
+//    return;
+//  }
+  var auth0_unique_key = data.sub;
+  
   const params = {
-    TableName: process.env.DYNAMODB_VENUE_TABLE,
+    TableName: process.env.DYNAMODB_USER_TABLE,
     Item: {
       id: uuid.v1(),
-      text: data.text,
+      uid: auth0_unique_key,
+      data: data,
       checked: false,
       createdAt: timestamp,
       updatedAt: timestamp,
@@ -28,7 +30,7 @@ module.exports.create = (event, context, callback) => {
     // handle potential errors
     if (error) {
       console.error(error);
-      callback(new Error('Couldn\'t create the todo item.'));
+      callback(new Error('Couldn\'t create the user item.'));
       return;
     }
 
