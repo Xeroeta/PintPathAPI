@@ -56,11 +56,45 @@ provider:
     DYNAMODB_BADGE_TABLE: ${self:service}-prod-Badges
     DYNAMODB_USER_BADGES_TABLE: ${self:service}-prod-UserBadges
     DYNAMODB_CLUSTER_TABLE: ${self:service}-map-polygons
+
+    DYNAMODB_USERBADGE_TABLE: ${self:service}-prod-UserBadges
+    DYNAMODB_BADGEVENUE_TABLE: ${self:service}-prod-BadgeVenues
+    DYNAMODB_USERCHECKINSTATS_TABLE: ${self:service}-prod-UserCheckInStats
+
     AUTH0_CLIENT: ${file(./config/aws_params.yml):AUTH0_CLIENT_ID}
     AUTH0_SECRET: ${file(./config/aws_params.yml):AUTH0_CLIENT_SECRET}
     AUTH0_DOMAIN: ${file(./config/aws_params.yml):AUTH0_DOMAIN}
 
+    USER_IMAGES_S3_BUCKET: ${file(./config/aws_params.yml):USER_IMAGES_S3_BUCKET}
+    S3_BUCKET_AWS_ACCESS_KEY: ${file(./config/aws_params.yml):S3_BUCKET_AWS_ACCESS_KEY}
+    S3_BUCKET_AWS_SECRET_KEY: ${file(./config/aws_params.yml):S3_BUCKET_AWS_SECRET_KEY}
+
   iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_USERBADGE_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_BADGEVENUE_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_USERCHECKINSTATS_TABLE}"
+
     - Effect: Allow
       Action:
         - dynamodb:Query

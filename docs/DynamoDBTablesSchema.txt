@@ -93,3 +93,32 @@ Device - PUT,POST,GET
 Schedule - PUT,POST,GET,DELETE
 User Badge - PUT,GET,DELETE
 Roles - GET
+
+    BadgeVenues
+    - id
+    - venue_id
+    - badge_id
+
+    UserCheckInStats
+    - id
+    - user_id
+    - badge_id
+    - datetime
+
+    UserBadges
+    - id
+    - user_id
+    - badge_id
+    - awarded_on
+
+    Badges
+    - id
+    - image_url
+
+    Snaps
+    - id
+    - image_url
+    - reviewed
+    - datetime
+    - reviewed_on
+

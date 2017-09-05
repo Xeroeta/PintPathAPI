@@ -11,6 +11,6 @@
     "serverless-dynamodb-local": "^0.2.18",
     "serverless-offline": "^3.8.3",
     "serverless-plugin-multiple-responses": "^1.0.0",
-    "uuid": "^2.0.3"
+    "uuid": "^3.1.0"
   }
 }

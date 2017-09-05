@@ -74,17 +74,13 @@ functions:
           cors: true
           integration: lambda
   snap_get:
-    handler: src/snaps/get.get
+    handler: src/snaps/get_sign_s3.get_sign_s3
     events:
       - http:
-          path: snaps/{id}
+          path: snaps_s3_signed_url
           method: get
           cors: true
           integration: lambda
-          private: true
-          authorizer: 
-            name: auth
-            arn: arn:aws:lambda:us-east-2:450228362552:function:swiftmile-prd-auth
   snap_update:
     handler: src/snaps/update.update
     events:
