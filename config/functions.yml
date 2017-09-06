@@ -73,6 +73,14 @@ functions:
           method: post
           cors: true
           integration: lambda
+  snap_upload:
+    handler: src/snaps/upload.upload
+    events:
+      - http:
+          path: upload_snaps
+          method: post
+          cors: true
+          integration: lambda
   snap_get:
     handler: src/snaps/get_sign_s3.get_sign_s3
     events:
