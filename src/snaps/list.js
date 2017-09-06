@@ -64,7 +64,7 @@ function handleRequest(user, event, callback) {
         var user_id = result.Items[0].id;
         const params = {
           TableName: process.env.DYNAMODB_SNAP_TABLE,
-          ProjectionExpression:'id,user_id,image_url,venue,reviewed,createdAt',
+          ProjectionExpression:'id,user_id,image_url,venue,venue_title,reviewed,createdAt',
           FilterExpression:'user_id = :user_id',
           ExpressionAttributeValues:{ ":user_id" : user_id }
         };

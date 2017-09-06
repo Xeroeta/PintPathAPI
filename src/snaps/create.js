@@ -69,6 +69,7 @@ function handleRequest(user, event, callback) {
             user_id: user_id,
             image_url: body.image_url,
             venue: body.venue,
+            venue_title: body.venue_title,
             checked: false,
             reviewed: false,
             createdAt: timestamp,
